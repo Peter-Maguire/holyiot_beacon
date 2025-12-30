@@ -46,13 +46,10 @@ def parse_motion(service_info):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up BLE Motion Sensor integration entry."""
 
-    # Address is optional; if you know the MAC you could store it
-    address = entry.title
-
     coordinator = PassiveBluetoothProcessorCoordinator(
         hass,
         _LOGGER,
-        address=None,
+        address=entry.data["mac"],
         mode=BluetoothScanningMode.PASSIVE,
         update_method=parse_motion,
     )
