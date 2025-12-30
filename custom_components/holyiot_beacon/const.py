@@ -1,0 +1,3 @@
+DOMAIN = "holyiot_beacon"
+DEFAULT_NAME = "HolyIoT Beacon"
+MOTION_UUID = "00005242-0000-1000-8000-00805f9b34fb"

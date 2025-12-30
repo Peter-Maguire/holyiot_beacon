@@ -1,0 +1,8 @@
+{
+  "name": "HolyIoT Beacon",
+  "content_in_root": false,
+  "domains": ["integration"],
+  "integration": true,
+  "version": "1.0.0",
+  "homeassistant": "2025.10"
+}

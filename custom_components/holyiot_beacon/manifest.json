@@ -1,0 +1,8 @@
+{
+  "domain": "holyiot_beacon",
+  "name": "HolyIoT Beacon",
+  "documentation": "",
+  "requirements": [],
+  "dependencies": ["bluetooth"],
+  "codeowners": []
+}

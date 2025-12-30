@@ -1,0 +1,10 @@
+{
+  "title": "HolyIoT Beacon",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure HolyIoT Beacon"
+      }
+    }
+  }
+}
