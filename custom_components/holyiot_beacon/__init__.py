@@ -16,19 +16,7 @@ PLATFORMS = [Platform.BINARY_SENSOR]
 
 
 def parse_motion(service_info):
-    raw_bytes = None
-
-    _LOGGER.info("Received BLE advertisement: %s", service_info)
-
-    # Get manufacturer data
-    if service_info.manufacturer_data:
-        for _, value in service_info.manufacturer_data.items():
-            raw_bytes = value
-            _LOGGER.info("Manufacturer detected=%s", raw_bytes)
-            break
-
-    if not raw_bytes:
-        return None
+    raw_bytes = service_info.service_data["00005242-0000-1000-8000-00805f9b34fb"]
 
     if isinstance(raw_bytes, str):
         raw_bytes = bytes.fromhex(raw_bytes)
@@ -37,7 +25,10 @@ def parse_motion(service_info):
         return None
 
     last4 = raw_bytes[-4:]
-    motion_detected = last4[0] == 0x03 and last4[1] == 0x04
+
+    _LOGGER.info("last4=%s", last4)
+
+    motion_detected = last4[1] == 0x04
 
     _LOGGER.info("Motion detected=%s", motion_detected)
 
