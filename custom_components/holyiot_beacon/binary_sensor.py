@@ -19,8 +19,8 @@ def to_data_update(parsed):
     return PassiveBluetoothDataUpdate(
         devices={},
         entity_descriptions={},
-        entity_data={(DOMAIN, "motion"): parsed["motion"]},
-        entity_names={(DOMAIN, "motion"): "Motion Detected"},
+        entity_data={"holyiot_beacon.motion": parsed["motion"]},
+        entity_names={"holyiot_beacon.motion": "Motion Detected"},
     )
 
 async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback):
