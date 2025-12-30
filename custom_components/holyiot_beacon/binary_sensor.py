@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from homeassistant.components.bluetooth.passive_update_processor import (
     PassiveBluetoothProcessorEntity,
     PassiveBluetoothDataProcessor,
@@ -23,7 +25,7 @@ def to_data_update(parsed):
         return None
 
     return PassiveBluetoothDataUpdate(
-        devices={},
+        devices={None: None},
         entity_descriptions={"motion": MOTION_SENSOR_ENTITY_DESCRIPTION},
         entity_data={"motion": parsed["motion"]},
         entity_names={"motion": "Motion Detected"},
@@ -41,13 +43,9 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
     entry.async_on_unload(coordinator.async_register_processor(processor))
 
 class MotionSensorEntity(PassiveBluetoothProcessorEntity, BinarySensorEntity):
+    entity_description: BinarySensorEntityDescription
 
     @property
-    def native_value(self):
-        _LOGGER.info("native_value=%s", self.entity_key)
-        return self.processor.entity_data.get(self.entity_key)
-
-    @property
-    def is_on(self):
+    def is_on(self) -> bool | None:
         _LOGGER.info("is_on=%s", self.entity_key)
-        return bool(self.processor.entity_data.get(self.entity_key))
+        return self.processor.entity_data.get(self.entity_key)
