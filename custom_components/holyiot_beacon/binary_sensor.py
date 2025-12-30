@@ -6,8 +6,13 @@ from homeassistant.components.bluetooth.passive_update_processor import (
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 def to_data_update(parsed):
+    _LOGGER.info("to_data_update=%s", parsed)
+
     if parsed is None:
         return None
 
@@ -28,6 +33,13 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
     entry.async_on_unload(coordinator.async_register_processor(processor))
 
 class MotionSensorEntity(PassiveBluetoothProcessorEntity, BinarySensorEntity):
+
+    @property
+    def native_value(self):
+        _LOGGER.info("native_value=%s", self.entity_key)
+        return self.processor.entity_data.get(self.entity_key)
+
     @property
     def is_on(self):
+        _LOGGER.info("is_on=%s", self.entity_key)
         return bool(self.processor.entity_data.get(self.entity_key))
