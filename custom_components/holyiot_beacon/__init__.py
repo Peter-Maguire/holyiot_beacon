@@ -13,35 +13,35 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.BINARY_SENSOR]
 
-def parse_motion(service_info):
-    """
-    Parse BLE advertisement to detect motion state.
-    """
 
-    # Try manufacturer data first (device sends raw bytes)
+
+def parse_motion(service_info):
     raw_bytes = None
 
-    # homeassistant BLE API exposes service_info.manufacturer_data
+    _LOGGER.info("Received BLE advertisement: %s", service_info)
+
+    # Get manufacturer data
     if service_info.manufacturer_data:
         for _, value in service_info.manufacturer_data.items():
             raw_bytes = value
+            _LOGGER.info("Manufacturer detected=%s", raw_bytes)
             break
 
-    if raw_bytes is None:
+    if not raw_bytes:
         return None
 
     if isinstance(raw_bytes, str):
         raw_bytes = bytes.fromhex(raw_bytes)
 
-    # Last 4 bytes differentiate motion vs no motion
-    # motion: 03 04 01 00
-    # no motion: 03 06 00 00
-    if len(raw_bytes) >= 4:
-        last4 = raw_bytes[-4:]
-        motion = (last4[0] == 0x03 and last4[1] == 0x04)
-        return {"motion": motion}
+    if len(raw_bytes) < 4:
+        return None
 
-    return None
+    last4 = raw_bytes[-4:]
+    motion_detected = last4[0] == 0x03 and last4[1] == 0x04
+
+    _LOGGER.info("Motion detected=%s", motion_detected)
+
+    return {"motion": motion_detected}
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up BLE Motion Sensor integration entry."""

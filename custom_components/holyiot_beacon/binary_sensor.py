@@ -1,15 +1,13 @@
 from homeassistant.components.bluetooth.passive_update_processor import (
-    PassiveBluetoothDataProcessor,
     PassiveBluetoothProcessorEntity,
+    PassiveBluetoothDataProcessor,
     PassiveBluetoothDataUpdate,
 )
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
 from .const import DOMAIN
 
 def to_data_update(parsed):
-    """Convert the parsed data into PassiveBluetoothDataUpdate."""
     if parsed is None:
         return None
 
@@ -22,13 +20,11 @@ def to_data_update(parsed):
 
 async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]
-
     processor = PassiveBluetoothDataProcessor(to_data_update)
 
     entry.async_on_unload(
         processor.async_add_entities_listener(MotionSensorEntity, async_add_entities)
     )
-
     entry.async_on_unload(coordinator.async_register_processor(processor))
 
 class MotionSensorEntity(PassiveBluetoothProcessorEntity, BinarySensorEntity):
