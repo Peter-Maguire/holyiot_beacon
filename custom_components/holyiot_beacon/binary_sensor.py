@@ -5,6 +5,7 @@ from homeassistant.components.bluetooth.passive_update_processor import (
     PassiveBluetoothDataProcessor,
     PassiveBluetoothDataUpdate, PassiveBluetoothEntityKey,
 )
+from homeassistant.components.bluetooth.passive_update_processor import DeviceInfo
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorEntityDescription, \
     BinarySensorDeviceClass
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -24,10 +25,10 @@ def to_data_update(parsed):
     if parsed is None:
         return None
 
-    entity_key = PassiveBluetoothEntityKey("motion", None)
+    entity_key = PassiveBluetoothEntityKey("motion", DOMAIN)
 
     return PassiveBluetoothDataUpdate(
-        devices={None: None},
+        devices={DOMAIN: DeviceInfo(name="HolyIoT Beacon", model="HolyIoT Beacon", manufacturer="HolyIoT")},
         entity_descriptions={entity_key: MOTION_SENSOR_ENTITY_DESCRIPTION},
         entity_data={entity_key: parsed["motion"]},
         entity_names={entity_key: "Motion Detected"},
