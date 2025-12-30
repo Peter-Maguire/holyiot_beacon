@@ -28,7 +28,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
     coordinator = hass.data[DOMAIN][entry.entry_id]
     processor = PassiveBluetoothDataProcessor(to_data_update)
 
-    _LOGGER.debug("Processor entity keys: %s", processor.entity_data.keys())
+    _LOGGER.debug("Processor %s", processor)
 
     entry.async_on_unload(
         processor.async_add_entities_listener(MotionSensorEntity, async_add_entities)
