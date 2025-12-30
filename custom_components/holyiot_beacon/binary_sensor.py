@@ -3,13 +3,18 @@ from homeassistant.components.bluetooth.passive_update_processor import (
     PassiveBluetoothDataProcessor,
     PassiveBluetoothDataUpdate,
 )
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorEntityDescription, \
+    BinarySensorDeviceClass
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+MOTION_SENSOR_ENTITY_DESCRIPTION = BinarySensorEntityDescription(
+    key="motion",
+    device_class=BinarySensorDeviceClass.MOTION,
+)
 
 def to_data_update(parsed):
     _LOGGER.info("to_data_update=%s", parsed)
@@ -19,7 +24,7 @@ def to_data_update(parsed):
 
     return PassiveBluetoothDataUpdate(
         devices={},
-        entity_descriptions={},
+        entity_descriptions={"motion": MOTION_SENSOR_ENTITY_DESCRIPTION},
         entity_data={"motion": parsed["motion"]},
         entity_names={"motion": "Motion Detected"},
     )
