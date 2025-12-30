@@ -10,6 +10,7 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+
 def to_data_update(parsed):
     _LOGGER.info("to_data_update=%s", parsed)
 
@@ -19,13 +20,15 @@ def to_data_update(parsed):
     return PassiveBluetoothDataUpdate(
         devices={},
         entity_descriptions={},
-        entity_data={"holyiot_beacon.motion": parsed["motion"]},
-        entity_names={"holyiot_beacon.motion": "Motion Detected"},
+        entity_data={"motion": parsed["motion"]},
+        entity_names={"motion": "Motion Detected"},
     )
 
 async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     processor = PassiveBluetoothDataProcessor(to_data_update)
+
+    _LOGGER.debug("Processor entity keys: %s", processor.entity_data.keys())
 
     entry.async_on_unload(
         processor.async_add_entities_listener(MotionSensorEntity, async_add_entities)
