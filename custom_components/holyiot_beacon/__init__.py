@@ -7,7 +7,7 @@ from homeassistant.components.bluetooth.passive_update_processor import (
     PassiveBluetoothProcessorCoordinator,
 )
 
-from .const import DOMAIN
+from .const import DOMAIN, MOTION_UUID
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ PLATFORMS = [Platform.BINARY_SENSOR]
 
 
 def parse_motion(service_info):
-    raw_bytes = service_info.service_data["00005242-0000-1000-8000-00805f9b34fb"]
+    raw_bytes = service_info.service_data[MOTION_UUID]
 
     if isinstance(raw_bytes, str):
         raw_bytes = bytes.fromhex(raw_bytes)
@@ -47,6 +47,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
-    entry.async_on_unload(coordinator.async_start())
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    entry.async_on_unload(coordinator.async_start())
     return True
