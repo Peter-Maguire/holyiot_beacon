@@ -2,6 +2,7 @@
   "domain": "holyiot_beacon",
   "name": "HolyIoT Beacon",
   "documentation": "",
+  "version": "1.0.0",
   "requirements": [],
   "dependencies": ["bluetooth"],
   "codeowners": []
