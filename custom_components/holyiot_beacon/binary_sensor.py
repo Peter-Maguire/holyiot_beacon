@@ -8,11 +8,16 @@ from homeassistant.components.bluetooth.passive_update_processor import (
 from homeassistant.components.bluetooth.passive_update_processor import DeviceInfo
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorEntityDescription, \
     BinarySensorDeviceClass
+from homeassistant.core import callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 from .const import DOMAIN
 import logging
+from datetime import datetime, timedelta
 
 _LOGGER = logging.getLogger(__name__)
+
+COOLDOWN_SECONDS = 30
 
 MOTION_SENSOR_ENTITY_DESCRIPTION = BinarySensorEntityDescription(
     key="motion",
@@ -48,7 +53,35 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
 class MotionSensorEntity(PassiveBluetoothProcessorEntity, BinarySensorEntity):
     entity_description: BinarySensorEntityDescription
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._attr_is_on = None
+        self._last_state_change = dt_util.utcnow() - timedelta(seconds=COOLDOWN_SECONDS)
+
     @property
     def is_on(self) -> bool | None:
-        _LOGGER.info("is_on=%s", self.entity_key)
-        return self.processor.entity_data.get(self.entity_key)
+        return self._attr_is_on
+
+    @callback
+    def _handle_processor_update(
+        self, new_data: PassiveBluetoothDataUpdate | None
+    ) -> None:
+        """Handle updated data from the processor."""
+        if new_data is None:
+            self.async_write_ha_state()
+            return
+
+        new_state = self.processor.entity_data.get(self.entity_key)
+
+        if new_state == self._attr_is_on:
+            return
+
+        now = dt_util.utcnow()
+        if now - self._last_state_change < timedelta(seconds=COOLDOWN_SECONDS):
+            _LOGGER.debug("Cooldown active, ignoring state change for %s", self.entity_key)
+            return
+
+        _LOGGER.info("State change for %s: %s -> %s", self.entity_key, self._attr_is_on, new_state)
+        self._attr_is_on = new_state
+        self._last_state_change = now
+        self.async_write_ha_state()
